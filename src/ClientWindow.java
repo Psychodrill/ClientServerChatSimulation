@@ -3,7 +3,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 
-public class ClientWindow extends JFrame {
+public class ClientWindow extends JFrame implements Clientable{
     private static final int WINDOW_HEIGHT =320;
     private static final int WINDOW_WIDTH =360;
 
@@ -17,20 +17,20 @@ public class ClientWindow extends JFrame {
     JTextField typeField = new JTextField();
     //JTextField msgField = new JTextField();
     JTextPane msgPane = new JTextPane();
+    ServerWindow server;
+    JPanel panTop =new JPanel(new GridLayout(2,3));
+    
 
     public ClientWindow(ServerWindow server) {
+        
         //setDefaultCloseOperation(EXIT_ON_CLOSE);
+        this.server = server;
         setLocationRelativeTo(server);
        // setLocation(WINDOW_POSX, WINDOW_POSY);
         setSize(WINDOW_WIDTH,WINDOW_HEIGHT);
         setTitle("Client");
         setResizable(false);
         setVisible(true);
-
-        JPanel panTop =new JPanel(new GridLayout(2,3));
-        //panTop.add(btnStart);
-        //panTop.add(btnExit);
-
         panTop.add(ipField);
         panTop.add(portField);
         panTop.add(new JPanel());
@@ -56,23 +56,54 @@ public class ClientWindow extends JFrame {
         btnLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e){
-                panTop.setVisible(false);
+               btnLoginPressed(e);
             }
+
         });
 
         btnSend.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e){
-                
-                String textFieldValue = typeField.getText();
-                msgPane.setText(textFieldValue);
-                server.setLogsValue(textFieldValue);
-                System.out.println(server.getComponentCount());
+
+                btnSendPressed();
+            }
+        });
+
+        typeField.addKeyListener(new KeyListener() {
+            @Override
+            public void keyPressed(KeyEvent e){
+
+                if(e.getKeyCode() == KeyEvent.VK_ENTER){
+                    btnSendPressed();
+                }
+            }
+            @Override
+            public void keyTyped(KeyEvent e){
+            }
+            @Override
+            public void keyReleased(KeyEvent e){
             }
         });
 
     }
 
+    public void btnSendPressed() {
+        String textFieldValue = typeField.getText();
+        //msgPane.setText(textFieldValue);
+        server.setLogsValue(textFieldValue);
+        msgPane.setText(server.getLogs());
+        typeField.setText("");
+        //server.addClient(this);
 
+    }
+    public void btnLoginPressed(ActionEvent e) {
+        panTop.setVisible(false);
+        server.addClient(this);
+    }
+
+    @Override
+    public void setLogs(String text) {
+        msgPane.setText(text);
+    }
 
 }
