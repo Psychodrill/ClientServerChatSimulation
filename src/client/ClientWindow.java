@@ -1,11 +1,15 @@
+package client;
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.*;
 
 
-public class ClientWindow extends JFrame implements Clientable{
+public class ClientWindow extends JFrame implements ClientView{
     private static final int WINDOW_HEIGHT =320;
     private static final int WINDOW_WIDTH =360;
+    private static final int WINDOW_POSX =300;
+    private static final int WINDOW_POSY =360;
 
     JButton btnLogin =new JButton("login");
     JButton btnSend = new JButton("send");
@@ -17,16 +21,21 @@ public class ClientWindow extends JFrame implements Clientable{
     JTextField typeField = new JTextField();
     //JTextField msgField = new JTextField();
     JTextPane msgPane = new JTextPane();
-    ServerWindow server;
+    //ServerWindow server;
     JPanel panTop =new JPanel(new GridLayout(2,3));
-    
+    Clientable client;
 
-    public ClientWindow(ServerWindow server) {
-        
+    public ClientWindow(Clientable client) {
+        this.client = client;
+   // public ClientWindow(Clientable client) {
         //setDefaultCloseOperation(EXIT_ON_CLOSE);
-        this.server = server;
-        setLocationRelativeTo(server);
-       // setLocation(WINDOW_POSX, WINDOW_POSY);
+        //this.server = server;
+
+
+        //setLocationRelativeTo(server);
+
+
+       setLocation(WINDOW_POSX, WINDOW_POSY);
         setSize(WINDOW_WIDTH,WINDOW_HEIGHT);
         setTitle("Client");
         setResizable(false);
@@ -56,7 +65,7 @@ public class ClientWindow extends JFrame implements Clientable{
         btnLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e){
-               btnLoginPressed(e);
+               btnLoginPressed();
             }
 
         });
@@ -89,21 +98,21 @@ public class ClientWindow extends JFrame implements Clientable{
 
     public void btnSendPressed() {
         String textFieldValue = typeField.getText();
-        //msgPane.setText(textFieldValue);
-        server.setLogsValue(textFieldValue);
-        msgPane.setText(server.getLogs());
+
+        client.sendMsg(textFieldValue);
         typeField.setText("");
-        //server.addClient(this);
 
     }
-    public void btnLoginPressed(ActionEvent e) {
+    public void btnLoginPressed() {
         panTop.setVisible(false);
-        server.addClient(this);
+        //server.addClient(this);
+        client.connectToServer(ipField.getText()+portField.getText()+loginField.getText()+passwordField.getText());
+    }
+    public void showMsg(String msg){
+        msgPane.setText(msgPane.getText()+msg +"\n");
     }
 
-    @Override
-    public void setLogs(String text) {
-        msgPane.setText(text);
-    }
+
+
 
 }
